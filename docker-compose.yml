@@ -10,15 +10,32 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8081
-      - ConnectionStrings__DefaultConnection=Server=productdb,1433;Database=productdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=databaseserver,1433;Database=productdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
     depends_on:
-      - productdb
+      - database
     networks:
       - shared-network
 
-  productdb:
-    container_name: productdb
-    hostname: productdb
+  authservice:
+    build:
+      context: ../ECommerce.AuthService/ECommerce.AuthService
+      dockerfile: Dockerfile
+    restart: always
+    container_name: authservice
+    ports:
+      - "8082:8082"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8082
+      - ConnectionStrings__DefaultConnection=Server=databaseserver,1433;Database=authdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
+    depends_on:
+      - database
+    networks:
+      - shared-network
+
+  database:
+    container_name: database
+    hostname: databaseserver
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
