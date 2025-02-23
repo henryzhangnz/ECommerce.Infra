@@ -56,7 +56,12 @@ services:
       dockerfile: Dockerfile
     container_name: webapp-angular-container
     ports:
-      - "88:80"
+      - "80:80"
+    depends_on:
+      - productservice
+      - authservice
+    networks:
+      - shared-network
 
 volumes:
   mssql_data:
