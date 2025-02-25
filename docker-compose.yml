@@ -33,6 +33,23 @@ services:
     networks:
       - shared-network
 
+  orderservice:
+    build:
+      context: ../ECommerce.Order.API/ECommerce.Order.API
+      dockerfile: Dockerfile
+    restart: always
+    container_name: orderservice
+    ports:
+      - "8083:8083"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8083
+      - ConnectionStrings__DefaultConnection=Server=databaseserver,1433;Database=ordersdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
+    depends_on:
+      - database
+    networks:
+      - shared-network
+
   database:
     container_name: database
     hostname: databaseserver
@@ -56,7 +73,7 @@ services:
       dockerfile: Dockerfile
     container_name: webapp-angular-container
     ports:
-      - "80:80"
+      - "88:80"
     depends_on:
       - productservice
       - authservice
