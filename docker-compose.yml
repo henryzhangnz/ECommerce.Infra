@@ -11,8 +11,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8081
       - ConnectionStrings__DefaultConnection=Server=databaseserver,1433;Database=productdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
+      - Rabbitmq__Host=rabbitmq
+      - Rabbitmq__Port=5672
+      - Rabbitmq__Exchange=user
+      - Rabbitmq__Username=guest
+      - Rabbitmq__Password=guest
     depends_on:
       - database
+      - rabbitmq
     networks:
       - shared-network
 
@@ -28,8 +34,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8082
       - ConnectionStrings__DefaultConnection=Server=databaseserver,1433;Database=authdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
+      - Rabbitmq__Host=rabbitmq
+      - Rabbitmq__Port=5672
+      - Rabbitmq__Exchange=user
+      - Rabbitmq__Username=guest
+      - Rabbitmq__Password=guest
     depends_on:
       - database
+      - rabbitmq
     networks:
       - shared-network
 
@@ -45,8 +57,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8083
       - ConnectionStrings__DefaultConnection=Server=databaseserver,1433;Database=ordersdb;User Id=sa;Password=Verystrongpassword123;TrustServerCertificate=True;
+      - Rabbitmq__Host=rabbitmq
+      - Rabbitmq__Port=5672
+      - Rabbitmq__Exchange=user
+      - Rabbitmq__Username=guest
+      - Rabbitmq__Password=guest
     depends_on:
       - database
+      - rabbitmq
     networks:
       - shared-network
 
@@ -77,11 +95,28 @@ services:
     depends_on:
       - productservice
       - authservice
+      - orderservice
+    networks:
+      - shared-network
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - shared-network
 
 volumes:
   mssql_data:
+  rabbitmq_data:
 
 networks:
   shared-network:
